@@ -1,6 +1,7 @@
 # rust-rest-api
 
 ## 環境変数設定
+
 ```bash
 cp .env.default .env
 ```
@@ -8,6 +9,7 @@ cp .env.default .env
 ## データベース
 
 ### データベース接続
+
 ```bash
 docker compose up -d
 docker compose exec postgres bash
@@ -27,7 +29,8 @@ docker compose up -d
 # この場合、上記のCREATE DATABASE rust_rest_api;をやり直して下さい。
 ```
 
-### diesel_cliの導入
+### diesel_cli の導入
+
 ```bash
 cargo install diesel_cli --no-default-features --features postgres
 diesel setup
@@ -36,14 +39,26 @@ diesel setup
 参考: https://zenn.dev/helloyuki/scraps/a242bfc79576c3
 
 ### マイグレーション
+
 ```bash
 diesel migration run
 ```
 
-マイグレーションが成功したかは、上記のデータベース接続でselectするなりで確認してください。
+マイグレーションが成功したかは、上記のデータベース接続で select するなりで確認してください。
 
-## web apiサーバ立ち上げ
+## web api サーバ立ち上げ
+
 ```bash
+cargo run
+```
+
+### docker で起動する場合
+
+```
+cp .env.docker.default .env
+docker compose up -d
+docker compose exec rust bash
+diesel migration run
 cargo run
 ```
 
