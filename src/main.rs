@@ -22,7 +22,7 @@ mod schema;
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
-    std::env::set_var("RUST_LOG", "info");
+    env::set_var("RUST_LOG", "info");
     env_logger::init();
 
     let host = env::var("HOST").expect("HOST must be set");
@@ -59,7 +59,7 @@ async fn get_root(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
         ),
 
         // TODO: HttpResponse::Errorを返せるようにしてください
-        Err(_e) => HttpResponse::Ok().body("failed"),
+        Err(_e) => HttpResponse::Ok().body("root failed"),
     }
 }
 
