@@ -3,7 +3,7 @@ extern crate diesel;
 use std::env;
 use std::sync::Mutex;
 
-use actix_web::{App, HttpServer, Responder, web};
+use actix_web::{App, HttpServer, web};
 use actix_web::middleware::Logger;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;

@@ -77,3 +77,10 @@ pub async fn create_user(db: web::Data<Mutex<PgConnection>>, user: NewUser) -> R
 //     answer: String,
 //     answered_at: String,
 // }
+
+#[cfg(test)]
+mod tests {
+    async fn test_find_all_users() {
+
+    }
+}

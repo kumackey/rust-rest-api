@@ -13,7 +13,7 @@ pub async fn get_root(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
         ),
 
         // TODO: HttpResponse::Errorを返せるようにしてください
-        Err(_e) => HttpResponse::Ok().body("root failed"),
+        Err(_e) => HttpResponse::Ok().body("get users failed"),
     }
 }
 
@@ -25,7 +25,7 @@ pub async fn get_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
         ),
 
         // TODO: HttpResponse::Errorを返せるようにしてください
-        Err(_e) => HttpResponse::Ok().body("failed"),
+        Err(_e) => HttpResponse::Ok().body("get users failed"),
     }
 }
 
@@ -57,7 +57,7 @@ pub async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder
         ),
 
         // TODO: HttpResponse::Errorを返せるようにしてください
-        Err(_e) => HttpResponse::Ok().body("failed"),
+        Err(_e) => HttpResponse::Ok().body("get questions failed"),
     }
 }
 
@@ -74,3 +74,4 @@ pub async fn post_answers(_: String) -> impl Responder {
 
     HttpResponse::Ok().body("post answers")
 }
+
