@@ -16,11 +16,13 @@ mod schema;
 
 #[get("/")]
 async fn get_root(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
-    // TODO /get_usersと同じことをしたいので、共通化する
+    // TODO /get_usersと同じことをしたいので、共通化してください
     match find_all_users(db).await {
         Ok(user_list) => HttpResponse::Ok().body(
             serde_json::to_string(&user_list).unwrap()
         ),
+
+        // TODO: HttpResponse::Errorを返せるようにしてください
         Err(_e) => HttpResponse::Ok().body("failed"),
     }
 }
@@ -28,11 +30,31 @@ async fn get_root(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
 #[get("/users")]
 async fn get_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
     match find_all_users(db).await {
-        // TODO: ここでusersを返すようにしたい
         Ok(user_list) => HttpResponse::Ok().body(
             serde_json::to_string(&user_list).unwrap()
         ),
+
+        // TODO: HttpResponse::Errorを返せるようにしてください
         Err(_e) => HttpResponse::Ok().body("failed"),
+    }
+}
+
+// 別にいらなかったけど、デバッグのために作った
+#[post("/users")]
+async fn post_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
+    // TODO: request bodyからnameを取得できるようにしてください・・・
+    let nuser = NewUser {
+        name: "test".to_string(),
+    };
+
+    let user = create_user(db, nuser).await;
+    match user {
+        Ok(user) => HttpResponse::Ok().body(
+            serde_json::to_string(&user).unwrap()
+        ),
+
+        // TODO: HttpResponse::Errorを返せるようにしてください
+        Err(_e) => HttpResponse::Ok().body("post user failed"),
     }
 }
 
@@ -43,6 +65,8 @@ async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
         Ok(user_list) => HttpResponse::Ok().body(
             serde_json::to_string(&user_list).unwrap()
         ),
+
+        // TODO: HttpResponse::Errorを返せるようにしてください
         Err(_e) => HttpResponse::Ok().body("failed"),
     }
 }
@@ -56,11 +80,8 @@ async fn post_answers(req_body: String) -> impl Responder {
     // user_nameからusersテーブルをfindして、なかったら作る
     // user_idを取得する
     // answersテーブルはuser_id, question_id, answer
-    HttpResponse::Ok().body(req_body)
-}
 
-async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
+    HttpResponse::Ok().body("post answers")
 }
 
 #[actix_web::main]
@@ -84,7 +105,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_users)
             .service(get_questions)
             .service(post_answers)
-            .route("/hey", web::get().to(manual_hello))
+            .service(post_users)
     })
         .bind(&addr)?
         .run()
