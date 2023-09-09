@@ -3,20 +3,15 @@ extern crate diesel;
 use std::env;
 use std::sync::Mutex;
 
-use env_logger;
-
 use actix_web::{App, get, HttpResponse, HttpServer, post, Responder, web};
 use actix_web::middleware::Logger;
-
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
-use serde::{Deserialize, Serialize};
-
-use schema::users;
-use schema::users::dsl::*;
+use env_logger;
 
 mod schema;
+mod model;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -53,7 +48,7 @@ async fn main() -> std::io::Result<()> {
 #[get("/")]
 async fn get_root(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
     // TODO /get_usersと同じことをしたいので、共通化してください
-    match find_all_users(db).await {
+    match model::find_all_users(db).await {
         Ok(user_list) => HttpResponse::Ok().body(
             serde_json::to_string(&user_list).unwrap()
         ),
@@ -65,7 +60,7 @@ async fn get_root(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
 
 #[get("/users")]
 async fn get_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
-    match find_all_users(db).await {
+    match model::find_all_users(db).await {
         Ok(user_list) => HttpResponse::Ok().body(
             serde_json::to_string(&user_list).unwrap()
         ),
@@ -79,11 +74,11 @@ async fn get_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
 #[post("/users")]
 async fn post_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
     // TODO: request bodyからnameを取得できるようにしてください・・・
-    let nuser = NewUser {
+    let nuser = model::NewUser {
         name: "test".to_string(),
     };
 
-    let user = create_user(db, nuser).await;
+    let user = model::create_user(db, nuser).await;
     match user {
         Ok(user) => HttpResponse::Ok().body(
             serde_json::to_string(&user).unwrap()
@@ -96,7 +91,7 @@ async fn post_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
 
 #[get("/questions")]
 async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
-    match find_all_users(db).await {
+    match model::find_all_users(db).await {
         // TODO: ここでuser_listを返してるけどquestionsを返すようにしたい
         Ok(user_list) => HttpResponse::Ok().body(
             serde_json::to_string(&user_list).unwrap()
@@ -123,15 +118,6 @@ async fn post_answers(req_body: String) -> impl Responder {
 
 // 以下データベース処理
 
-async fn find_all_users(db: web::Data<Mutex<PgConnection>>) -> Result<Vec<User>, diesel::result::Error> {
-    let mut conn = db.lock().unwrap();
-
-    let results = users
-        .limit(100)
-        .load::<User>(&mut *conn)?;
-
-    Ok(results)
-}
 
 // async fn find_by_name(db: web::Data<Mutex<PgConnection>>,name: String) -> Result<User, diesel::result::Error> {
 //     let mut conn = db.lock().unwrap();
@@ -143,16 +129,6 @@ async fn find_all_users(db: web::Data<Mutex<PgConnection>>) -> Result<Vec<User>,
 //     Ok(result)
 // }
 
-async fn create_user(db: web::Data<Mutex<PgConnection>>, user: NewUser) -> Result<User, diesel::result::Error> {
-    let mut conn = db.lock().unwrap();
-
-    let result = diesel::insert_into(users)
-        .values(&user)
-        .get_result(&mut *conn)?;
-
-    Ok(result)
-}
-
 // async fn answer_question(db: web::Data<Mutex<PgConnection>>, answer: Answer) -> Result<Answer, diesel::result::Error> {
 //     let mut conn = db.lock().unwrap();
 //
@@ -162,18 +138,6 @@ async fn create_user(db: web::Data<Mutex<PgConnection>>, user: NewUser) -> Resul
 //
 //     Ok(result)
 // }
-
-#[derive(Queryable, Serialize, Deserialize)]
-struct User {
-    id: i32,
-    name: String,
-}
-
-#[derive(Insertable)]
-#[table_name = "users"]
-pub struct NewUser {
-    pub name: String,
-}
 
 // #[derive(Queryable, Serialize, Deserialize, Insertable)]
 // struct Question {

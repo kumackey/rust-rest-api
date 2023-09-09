@@ -1,11 +1,5 @@
 # rust-rest-api
 
-## 環境変数設定
-
-```bash
-cp .env.default .env
-```
-
 ## データベース
 
 ### データベース接続
@@ -39,19 +33,28 @@ docker compose exec rust diesel migration run
 ## web api サーバ立ち上げ
 
 ### docker で起動する場合(推奨)
+
 ```
-cp .env.docker.default .env
 docker compose up -d
 ```
 
 http://localhost:8080/
 
-### local(非推奨)
+アプリケーションコードをいじった場合はdocker compose up -d --buildで再起動します
+
+### localのhost machineで起動(非推奨)
+
 ```bash
 cargo run
 ```
 
 ## デプロイ方法
+
+## 環境変数設定
+
+```bash
+cp .env.default .env
+```
 
 TODO: 書いておくと楽
 
