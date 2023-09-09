@@ -6,12 +6,13 @@ use actix_web::{App, get, HttpResponse, HttpServer, post, Responder, web};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
+use std::sync::Mutex;
 
 use schema::users::dsl::*;
 
 #[get("/")]
-async fn hello() -> impl Responder {
-    match query().await {
+async fn hello(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
+    match query(db).await {
         Ok(s) => HttpResponse::Ok().body(s),
         Err(_e) => HttpResponse::Ok().body("failed"),
     }
@@ -30,14 +31,19 @@ async fn manual_hello() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
-    dotenv().ok();
     let host = env::var("HOST").expect("HOST must be set");
     let port = env::var("PORT").expect("PORT must be set");
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+
+    let connection = PgConnection::establish(&database_url)
+        .expect(&format!("Error connecting to {}", database_url));
+    let connection = web::Data::new(Mutex::new(connection));
 
     let addr = format!("{}:{}", host, port);
 
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
+            .app_data(connection.clone())
             .service(hello)
             .service(echo)
             .route("/hey", web::get().to(manual_hello))
@@ -47,24 +53,13 @@ async fn main() -> std::io::Result<()> {
         .await
 }
 
-async fn query() -> Result<String, tokio_postgres::Error> {
-    dotenv().ok();
-
-    let database_url = env::var("DATABASE_URL")
-        .expect("DATABASE_URL must be set");
-    let mut connection = PgConnection::establish(&database_url)
-        .expect(&format!("Error connecting to {}", database_url));
+async fn query(db: web::Data<Mutex<PgConnection>>) -> Result<String, diesel::result::Error> {
+    let mut conn = db.lock().unwrap();
 
     let results = users
         .limit(5)
-        .load::<User>(&mut connection)
+        .load::<User>(&mut *conn)
         .expect("Error loading users");
-
-    // for user in results {
-    //     println!("{}", user.name);
-    // }
-
-    // users: {}
 
     Ok(format!("users: {}", results.len()))
 }
