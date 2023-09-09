@@ -1,13 +1,12 @@
 extern crate diesel;
 
 use std::env;
+use std::sync::Mutex;
 
 use actix_web::{App, get, HttpResponse, HttpServer, post, Responder, web};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
-use std::sync::Mutex;
-use actix_web::web::post;
 
 use schema::users::dsl::*;
 
