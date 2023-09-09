@@ -1,7 +1,13 @@
-use actix_web::{App, get, HttpResponse, HttpServer, post, Responder, web};
-use tokio_postgres::NoTls;
-use dotenv::dotenv;
+extern crate diesel;
+
 use std::env;
+
+use actix_web::{App, get, HttpResponse, HttpServer, post, Responder, web};
+use diesel::pg::PgConnection;
+use diesel::prelude::*;
+use dotenv::dotenv;
+
+use schema::users::dsl::*;
 
 #[get("/")]
 async fn hello() -> impl Responder {
@@ -23,9 +29,11 @@ async fn manual_hello() -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
+
+    dotenv().ok();
     let host = env::var("HOST").expect("HOST must be set");
     let port = env::var("PORT").expect("PORT must be set");
-    
+
     let addr = format!("{}:{}", host, port);
 
     HttpServer::new(|| {
@@ -41,27 +49,30 @@ async fn main() -> std::io::Result<()> {
 
 async fn query() -> Result<String, tokio_postgres::Error> {
     dotenv().ok();
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-    let (client, connection) = tokio_postgres::connect(
-        &database_url,
-        NoTls,
-    )
-        .await?;
+    let database_url = env::var("DATABASE_URL")
+        .expect("DATABASE_URL must be set");
+    let mut connection = PgConnection::establish(&database_url)
+        .expect(&format!("Error connecting to {}", database_url));
 
-    tokio::spawn(async move {
-        if let Err(e) = connection.await {
-            eprintln!("connection error: {}", e);
-        }
-    });
+    let results = users
+        .limit(5)
+        .load::<User>(&mut connection)
+        .expect("Error loading users");
 
-    let rows = client.query("SELECT id, name FROM users", &[]).await?;
+    // for user in results {
+    //     println!("{}", user.name);
+    // }
 
-    if let Some(row) = rows.get(0) {
-        let id: i32 = row.get(0);
-        let name: String = row.get(1);
-        return Ok(format!("found person: {} {}", id, name));
-    }
+    // users: {}
 
-    Ok("No results found".to_string())
+    Ok(format!("users: {}", results.len()))
+}
+
+mod schema;
+
+#[derive(Queryable)]
+struct User {
+    id: i32,
+    name: String,
 }
