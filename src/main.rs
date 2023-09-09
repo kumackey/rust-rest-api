@@ -7,32 +7,39 @@ use actix_web::{App, get, HttpResponse, HttpServer, post, Responder, web};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
+use serde::{Deserialize, Serialize};
 
 use schema::users::dsl::*;
 
 #[get("/")]
 async fn get_root(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
     // TODO usersを呼び出したいので、get_usersの関数を使うようにする
-    match query(db).await {
-        Ok(s) => HttpResponse::Ok().body(s),
+    match find_all_users(db).await {
+        Ok(user_list) => HttpResponse::Ok().body(
+            serde_json::to_string(&user_list).unwrap()
+        ),
         Err(_e) => HttpResponse::Ok().body("failed"),
     }
 }
 
 #[get("/users")]
 async fn get_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
-    match query(db).await {
+    match find_all_users(db).await {
         // TODO: ここでusersを返すようにしたい
-        Ok(s) => HttpResponse::Ok().body(s),
+        Ok(user_list) => HttpResponse::Ok().body(
+            serde_json::to_string(&user_list).unwrap()
+        ),
         Err(_e) => HttpResponse::Ok().body("failed"),
     }
 }
 
 #[get("/questions")]
 async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
-    match query(db).await {
+    match find_all_users(db).await {
         // TODO: ここでquestionsを返すようにしたい
-        Ok(s) => HttpResponse::Ok().body(s),
+        Ok(user_list) => HttpResponse::Ok().body(
+            serde_json::to_string(&user_list).unwrap()
+        ),
         Err(_e) => HttpResponse::Ok().body("failed"),
     }
 }
@@ -81,20 +88,19 @@ async fn main() -> std::io::Result<()> {
         .await
 }
 
-async fn query(db: web::Data<Mutex<PgConnection>>) -> Result<String, diesel::result::Error> {
+async fn find_all_users(db: web::Data<Mutex<PgConnection>>) -> Result<Vec<User>, diesel::result::Error> {
     let mut conn = db.lock().unwrap();
 
     let results = users
         .limit(5)
-        .load::<User>(&mut *conn)
-        .expect("Error loading users");
+        .load::<User>(&mut *conn)?;
 
-    Ok(format!("users: {}", results.len()))
+    Ok(results)
 }
 
 mod schema;
 
-#[derive(Queryable)]
+#[derive(Queryable, Serialize, Deserialize)]
 struct User {
     id: i32,
     name: String,

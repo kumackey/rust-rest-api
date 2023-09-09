@@ -1057,6 +1057,8 @@ dependencies = [
  "diesel",
  "dotenv",
  "postgres",
+ "serde",
+ "serde_json",
  "tokio",
  "tokio-postgres",
 ]
