@@ -7,19 +7,46 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
 use std::sync::Mutex;
+use actix_web::web::post;
 
 use schema::users::dsl::*;
 
 #[get("/")]
-async fn hello(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
+async fn get_root(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
+    // TODO usersを呼び出したいので、get_usersの関数を使うようにする
     match query(db).await {
         Ok(s) => HttpResponse::Ok().body(s),
         Err(_e) => HttpResponse::Ok().body("failed"),
     }
 }
 
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
+#[get("/users")]
+async fn get_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
+    match query(db).await {
+        // TODO: ここでusersを返すようにしたい
+        Ok(s) => HttpResponse::Ok().body(s),
+        Err(_e) => HttpResponse::Ok().body("failed"),
+    }
+}
+
+#[get("/questions")]
+async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
+    match query(db).await {
+        // TODO: ここでquestionsを返すようにしたい
+        Ok(s) => HttpResponse::Ok().body(s),
+        Err(_e) => HttpResponse::Ok().body("failed"),
+    }
+}
+
+// TODO questions/:id/answersのGETを追加する
+
+#[post("/answers")]
+async fn post_answers(req_body: String) -> impl Responder {
+    // TODO: questionを登録する
+    // user_name, question_id, answerを受け取る
+    // user_nameからusersテーブルをfindして、なかったら作る
+    // user_idを取得する
+    // answersテーブルはuser_id, question_id, answer
     HttpResponse::Ok().body(req_body)
 }
 
@@ -44,8 +71,10 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(connection.clone())
-            .service(hello)
-            .service(echo)
+            .service(get_root)
+            .service(get_users)
+            .service(get_questions)
+            .service(post_answers)
             .route("/hey", web::get().to(manual_hello))
     })
         .bind(&addr)?
