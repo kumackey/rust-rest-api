@@ -37,7 +37,7 @@ diesel setup
 
 ### マイグレーション
 ```bash
-diesel_cli migration run
+diesel migration run
 ```
 
 マイグレーションが成功したかは、上記のデータベース接続でselectするなりで確認してください。
