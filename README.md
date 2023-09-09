@@ -51,4 +51,8 @@ http://localhost:8080/
 cargo run
 ```
 
+## デプロイ方法
+
+TODO: 書いておくと楽
+
 
