@@ -14,6 +14,34 @@ use schema::users::dsl::*;
 
 mod schema;
 
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    dotenv().ok();
+
+    let host = env::var("HOST").expect("HOST must be set");
+    let port = env::var("PORT").expect("PORT must be set");
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+
+    let connection = PgConnection::establish(&database_url)
+        .expect(&format!("Error connecting to {}", database_url));
+    let connection = web::Data::new(Mutex::new(connection));
+
+    let addr = format!("{}:{}", host, port);
+
+    HttpServer::new(move || {
+        App::new()
+            .app_data(connection.clone())
+            .service(get_root)
+            .service(get_users)
+            .service(get_questions)
+            .service(post_answers)
+            .service(post_users)
+    })
+        .bind(&addr)?
+        .run()
+        .await
+}
+
 #[get("/")]
 async fn get_root(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
     // TODO /get_usersと同じことをしたいので、共通化してください
@@ -61,7 +89,7 @@ async fn post_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
 #[get("/questions")]
 async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
     match find_all_users(db).await {
-        // TODO: ここでquestionsを返すようにしたい
+        // TODO: ここでuser_listを返してるけどquestionsを返すようにしたい
         Ok(user_list) => HttpResponse::Ok().body(
             serde_json::to_string(&user_list).unwrap()
         ),
@@ -72,6 +100,7 @@ async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
 }
 
 // TODO questions/:id/answersのGETを追加する
+// 用途は、この質問に対する回答一覧を取得します
 
 #[post("/answers")]
 async fn post_answers(req_body: String) -> impl Responder {
@@ -82,34 +111,6 @@ async fn post_answers(req_body: String) -> impl Responder {
     // answersテーブルはuser_id, question_id, answer
 
     HttpResponse::Ok().body("post answers")
-}
-
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    dotenv().ok();
-
-    let host = env::var("HOST").expect("HOST must be set");
-    let port = env::var("PORT").expect("PORT must be set");
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-
-    let connection = PgConnection::establish(&database_url)
-        .expect(&format!("Error connecting to {}", database_url));
-    let connection = web::Data::new(Mutex::new(connection));
-
-    let addr = format!("{}:{}", host, port);
-
-    HttpServer::new(move || {
-        App::new()
-            .app_data(connection.clone())
-            .service(get_root)
-            .service(get_users)
-            .service(get_questions)
-            .service(post_answers)
-            .service(post_users)
-    })
-        .bind(&addr)?
-        .run()
-        .await
 }
 
 // 以下データベース処理
