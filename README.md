@@ -1,5 +1,10 @@
 # rust-rest-api
 
+## 環境変数設定
+```bash
+cp .env.default .env
+```
+
 ## データベース
 
 ### データベース接続
@@ -8,51 +13,28 @@ docker compose up -d
 docker compose exec postgres bash
 
 psql -U postgres
+
+# 以下は初期接続のときのみ
+CREATE DATABASE rust_rest_api;
+\c rust_rest_api
 ```
 
 ### データベースリセット
 
-### 初期データ挿入
-```sql
-CREATE DATABASE rust_rest_api;
-
-\c rust_rest_api
-
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR NOT NULL
-);
-
-INSERT INTO users (name) VALUES ('出題者A');
-INSERT INTO users (name) VALUES ('回答者A');
-
-CREATE TABLE questions (
-    id SERIAL PRIMARY KEY,
-    question VARCHAR NOT NULL,
-    answer VARCHAR NOT NULL,
-    questioner_id INTEGER NOT NULL
-);
-
-ALTER TABLE questions ADD CONSTRAINT fk_questioner_id FOREIGN KEY (questioner_id) REFERENCES users (id);
-INSERT INTO questions (question, answer, questioner_id) VALUES ('日本で一番高い山は？', '富士山', 1);
-
-CREATE TABLE answers (
-    users_id INTEGER NOT NULL,
-    questions_id INTEGER NOT NULL,
-    answer VARCHAR NOT NULL,
-    answered_at TIMESTAMP NOT NULL
-);
-  
-ALTER TABLE answers ADD CONSTRAINT fk_users_id FOREIGN KEY (users_id) REFERENCES users (id);
-ALTER TABLE answers ADD CONSTRAINT fk_questions_id FOREIGN KEY (questions_id) REFERENCES questions (id);
-
-INSERT INTO answers (users_id, questions_id, answer, answered_at) VALUES (2, 1, '富士山', '2021-01-01 00:00:00');
+```
+docker compose down -v
+docker compose up -d
+# この場合、上記のCREATE DATABASE rust_rest_api;をやり直して下さい。
 ```
 
-## 環境変数設定
+#### diesel_cli導入
 ```bash
-cp .env.default .env
+cargo install diesel_cli --no-default-features --features postgres
+diesel setup
+diesel_cli migration run
 ```
+
+参考: https://zenn.dev/helloyuki/scraps/a242bfc79576c3
 
 ## web apiサーバ立ち上げ
 ```bash
