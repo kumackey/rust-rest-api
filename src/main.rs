@@ -5,7 +5,7 @@ use tokio_postgres::NoTls;
 async fn hello() -> impl Responder {
     match query().await {
         Ok(s) => HttpResponse::Ok().body(s),
-        Err(e) => HttpResponse::Ok().body("failed"),
+        Err(_e) => HttpResponse::Ok().body("failed"),
     }
 }
 
