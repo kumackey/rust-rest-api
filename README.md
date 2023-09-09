@@ -26,7 +26,6 @@ CREATE DATABASE rust_rest_api;
 ```
 docker compose down -v
 docker compose up -d
-# この場合、上記のCREATE DATABASE rust_rest_api;をやり直して下さい。
 ```
 
 ### マイグレーション
@@ -39,22 +38,17 @@ docker compose exec rust diesel migration run
 
 ## web api サーバ立ち上げ
 
-```bash
-cargo run
-```
-
-### docker で起動する場合
-
+### docker で起動する場合(推奨)
 ```
 cp .env.docker.default .env
 docker compose up -d
-docker compose exec rust bash
-diesel migration run
-cargo run
 ```
 
 http://localhost:8080/
 
-上記通りやれば
-found person: 1 John
-って返ってくる(はず)
+### local(非推奨)
+```bash
+cargo run
+```
+
+
