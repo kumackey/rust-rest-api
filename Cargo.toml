@@ -9,3 +9,4 @@ postgres = "*"
 tokio-postgres = "*"
 tokio = "*"
 dotenv = "0.14.1"
+diesel = { version = "2.1.1", features = ["postgres"] }
