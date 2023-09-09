@@ -22,13 +22,19 @@ async fn manual_hello() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenv().ok();
+    let host = env::var("HOST").expect("HOST must be set");
+    let port = env::var("PORT").expect("PORT must be set");
+    
+    let addr = format!("{}:{}", host, port);
+
     HttpServer::new(|| {
         App::new()
             .service(hello)
             .service(echo)
             .route("/hey", web::get().to(manual_hello))
     })
-        .bind(("127.0.0.1", 8080))?
+        .bind(&addr)?
         .run()
         .await
 }
