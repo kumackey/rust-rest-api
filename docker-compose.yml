@@ -4,9 +4,9 @@ services:
     container_name: rust
     build:
       context: .
+    env_file:
+      - .env.docker.default
     tty: true
-    volumes:
-      - .:/app
     ports:
       - "8080:8080"
     depends_on:
