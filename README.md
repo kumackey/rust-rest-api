@@ -22,6 +22,11 @@ CREATE TABLE users (
 INSERT INTO users (name, email) VALUES ('John', 'sampleuser@email.com');
 ```
 
+## 環境変数設定
+```bash
+cp .env.default .env
+```
+
 ## web apiサーバ立ち上げ
 ```bash
 cargo run
