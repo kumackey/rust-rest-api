@@ -113,15 +113,15 @@ async fn find_all_users(db: web::Data<Mutex<PgConnection>>) -> Result<Vec<User>,
 //     Ok(result)
 // }
 
-// async fn create_user(db: web::Data<Mutex<PgConnection>>, user: User) -> Result<User, diesel::result::Error> {
-//     let mut conn = db.lock().unwrap();
-//
-//     let result = diesel::insert_into(users)
-//         .values(&user)
-//         .get_result(&mut *conn)?;
-//
-//     Ok(result)
-// }
+async fn create_user(db: web::Data<Mutex<PgConnection>>, user: NewUser) -> Result<User, diesel::result::Error> {
+    let mut conn = db.lock().unwrap();
+
+    let result = diesel::insert_into(users)
+        .values(&user)
+        .get_result(&mut *conn)?;
+
+    Ok(result)
+}
 
 // async fn answer_question(db: web::Data<Mutex<PgConnection>>, answer: Answer) -> Result<Answer, diesel::result::Error> {
 //     let mut conn = db.lock().unwrap();
