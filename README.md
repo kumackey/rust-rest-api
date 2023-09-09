@@ -27,14 +27,18 @@ docker compose up -d
 # この場合、上記のCREATE DATABASE rust_rest_api;をやり直して下さい。
 ```
 
-#### diesel_cli導入
+### diesel_cliの導入
 ```bash
 cargo install diesel_cli --no-default-features --features postgres
 diesel setup
-diesel_cli migration run
 ```
 
 参考: https://zenn.dev/helloyuki/scraps/a242bfc79576c3
+
+### マイグレーション
+```bash
+diesel_cli migration run
+```
 
 ## web apiサーバ立ち上げ
 ```bash
@@ -45,4 +49,4 @@ http://localhost:8080/
 
 上記通りやれば
 found person: 1 John
-って返ってくる
+って返ってくる(はず)
