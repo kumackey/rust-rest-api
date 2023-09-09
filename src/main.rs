@@ -3,7 +3,11 @@ extern crate diesel;
 use std::env;
 use std::sync::Mutex;
 
+use env_logger;
+
 use actix_web::{App, get, HttpResponse, HttpServer, post, Responder, web};
+use actix_web::middleware::Logger;
+
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
@@ -18,6 +22,9 @@ mod schema;
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
+    std::env::set_var("RUST_LOG", "info");
+    env_logger::init();
+
     let host = env::var("HOST").expect("HOST must be set");
     let port = env::var("PORT").expect("PORT must be set");
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
@@ -30,6 +37,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .wrap(Logger::default())
             .app_data(connection.clone())
             .service(get_root)
             .service(get_users)
