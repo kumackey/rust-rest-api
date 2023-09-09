@@ -40,6 +40,8 @@ diesel setup
 diesel_cli migration run
 ```
 
+マイグレーションが成功したかは、上記のデータベース接続でselectするなりで確認してください。
+
 ## web apiサーバ立ち上げ
 ```bash
 cargo run
