@@ -29,19 +29,10 @@ docker compose up -d
 # この場合、上記のCREATE DATABASE rust_rest_api;をやり直して下さい。
 ```
 
-### diesel_cli の導入
-
-```bash
-cargo install diesel_cli --no-default-features --features postgres
-diesel setup
-```
-
-参考: https://zenn.dev/helloyuki/scraps/a242bfc79576c3
-
 ### マイグレーション
 
 ```bash
-diesel migration run
+docker compose exec rust diesel migration run
 ```
 
 マイグレーションが成功したかは、上記のデータベース接続で select するなりで確認してください。
