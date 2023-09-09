@@ -46,11 +46,12 @@ async fn query() -> Result<String, tokio_postgres::Error> {
 
     let rows = client.query("SELECT id, name FROM users", &[]).await?;
 
-    for row in &rows {
+    if let Some(row) = rows.get(0) {
         let id: i32 = row.get(0);
         let name: String = row.get(1);
         println!("found person: {} {}", id, name);
+        return Ok(format!("found person: {} {}", id, name));
     }
 
-    Ok("hello".to_string())
+    Ok("No results found".to_string())
 }
