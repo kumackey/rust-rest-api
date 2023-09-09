@@ -49,6 +49,11 @@ ALTER TABLE answers ADD CONSTRAINT fk_questions_id FOREIGN KEY (questions_id) RE
 INSERT INTO answers (users_id, questions_id, answer, answered_at) VALUES (2, 1, '富士山', '2021-01-01 00:00:00');
 ```
 
+## 環境変数設定
+```bash
+cp .env.default .env
+```
+
 ## web apiサーバ立ち上げ
 ```bash
 cargo run

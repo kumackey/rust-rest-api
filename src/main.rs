@@ -1,5 +1,7 @@
 use actix_web::{App, get, HttpResponse, HttpServer, post, Responder, web};
 use tokio_postgres::NoTls;
+use dotenv::dotenv;
+use std::env;
 
 #[get("/")]
 async fn hello() -> impl Responder {
@@ -32,8 +34,11 @@ async fn main() -> std::io::Result<()> {
 }
 
 async fn query() -> Result<String, tokio_postgres::Error> {
+    dotenv().ok();
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+
     let (client, connection) = tokio_postgres::connect(
-        "postgresql://postgres:mysecretpassword@127.0.0.1:15432/rust_rest_api",
+        &database_url,
         NoTls,
     )
         .await?;
