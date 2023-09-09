@@ -73,7 +73,7 @@ async fn get_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
 // 別にいらなかったけど、デバッグのために作った
 #[post("/users")]
 async fn post_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
-    // TODO: request bodyからnameを取得できるようにしてください・・・
+    // TODO: request bodyからnameを取得できるようにしてください
     let nuser = model::NewUser {
         name: "test".to_string(),
     };
@@ -106,7 +106,7 @@ async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
 // 用途は、この質問に対する回答一覧を取得します
 
 #[post("/answers")]
-async fn post_answers(req_body: String) -> impl Responder {
+async fn post_answers(_: String) -> impl Responder {
     // TODO: questionを登録する
     // user_name, question_id, answerを受け取る
     // user_nameからusersテーブルをfindして、なかったら作る
@@ -115,42 +115,3 @@ async fn post_answers(req_body: String) -> impl Responder {
 
     HttpResponse::Ok().body("post answers")
 }
-
-// 以下データベース処理
-
-
-// async fn find_by_name(db: web::Data<Mutex<PgConnection>>,name: String) -> Result<User, diesel::result::Error> {
-//     let mut conn = db.lock().unwrap();
-//
-//     let result = users
-//         .filter(name.eq(name))
-//         .first::<User>(&mut *conn)?;
-//
-//     Ok(result)
-// }
-
-// async fn answer_question(db: web::Data<Mutex<PgConnection>>, answer: Answer) -> Result<Answer, diesel::result::Error> {
-//     let mut conn = db.lock().unwrap();
-//
-//     let result = diesel::insert_into(answers)
-//         .values(&answer)
-//         .get_result(&mut *conn)?;
-//
-//     Ok(result)
-// }
-
-// #[derive(Queryable, Serialize, Deserialize, Insertable)]
-// struct Question {
-//     id: i32,
-//     questioner_id: i32,
-//     question: String,
-//     answer: String,
-// }
-//
-// #[derive(Queryable, Serialize, Deserialize, Insertable)]
-// struct Answer {
-//     id: i32,
-//     question_id: i32,
-//     answer: String,
-//     answered_at: String,
-// }

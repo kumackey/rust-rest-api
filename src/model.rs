@@ -40,3 +40,40 @@ pub async fn create_user(db: web::Data<Mutex<PgConnection>>, user: NewUser) -> R
 
     Ok(result)
 }
+
+// TODO: 上に似たような感じで、以下の関数やモデルを作ってみて下さい。
+// async fn find_by_name(db: web::Data<Mutex<PgConnection>>,name: String) -> Result<User, diesel::result::Error> {
+//     let mut conn = db.lock().unwrap();
+//
+//     let result = users
+//         .filter(name.eq(name))
+//         .first::<User>(&mut *conn)?;
+//
+//     Ok(result)
+// }
+
+// async fn answer_question(db: web::Data<Mutex<PgConnection>>, answer: Answer) -> Result<Answer, diesel::result::Error> {
+//     let mut conn = db.lock().unwrap();
+//
+//     let result = diesel::insert_into(answers)
+//         .values(&answer)
+//         .get_result(&mut *conn)?;
+//
+//     Ok(result)
+// }
+
+// #[derive(Queryable, Serialize, Deserialize, Insertable)]
+// struct Question {
+//     id: i32,
+//     questioner_id: i32,
+//     question: String,
+//     answer: String,
+// }
+//
+// #[derive(Queryable, Serialize, Deserialize, Insertable)]
+// struct Answer {
+//     id: i32,
+//     question_id: i32,
+//     answer: String,
+//     answered_at: String,
+// }
