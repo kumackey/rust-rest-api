@@ -23,8 +23,6 @@ TODO:
 
 ## APIの使い
 
-TODO: いっぱい書いて❤️
-
 ```bash
 # ユーザー一覧取得
 curl http://localhost:8080/users
