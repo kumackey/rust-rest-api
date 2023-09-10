@@ -16,8 +16,8 @@ curl -X POST http://localhost:8080/qustions/1/answers -d '{"answer": "阿蘇山"
 
 ### 設計
 
-省エネでホワイトボードに書いて jpeg とかでもOK
-https://dbdiagram.io/d/64fd2ac402bd1c4a5e45d4d3
+省エネでホワイトボードに書いて jpeg とかでもOK  
+<iframe width="560" height="315" src='https://dbdiagram.io/embed/64fd2ac402bd1c4a5e45d4d3'> </iframe>
 
 ### データベース接続
 
