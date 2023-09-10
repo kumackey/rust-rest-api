@@ -53,7 +53,7 @@ pub async fn post_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
 pub async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
     let mut conn = db.lock().unwrap();
 
-    match model::find_all_users(&mut conn) {
+    match model::find_all_questions(&mut conn) {
         // TODO: ここでuser_listを返してるけどquestionsを返すようにしたい
         Ok(user_list) => HttpResponse::Ok().body(
             serde_json::to_string(&user_list).unwrap()

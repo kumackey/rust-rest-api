@@ -41,9 +41,9 @@ pub fn create_user(conn: &mut PgConnection, user: NewUser) -> Result<User, diese
 // ;
 pub struct Question {
     pub id: i32,
-    pub questioner_id: i32,
     pub question: String,
     pub answer: String,
+    pub questioner_id: i32,
 }
 
 pub fn find_all_questions(conn: &mut PgConnection) -> Result<Vec<Question>, diesel::result::Error> {
