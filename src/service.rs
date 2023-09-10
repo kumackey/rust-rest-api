@@ -82,3 +82,7 @@ pub async fn post_answers(_: String) -> impl Responder {
     HttpResponse::Ok().body("post answers")
 }
 
+// TODO: users/:id/answersのGETを追加する
+// ユーザは自分の回答一覧をみたいはずなので。
+// ただ、上記の仕様ではユーザは自分のuser_idを知らないはずなので、 users/:name/answersというルーティングにしても良いかもしれない
+// その場合はユーザ名は英数字のみみたいな規約を追加することに
