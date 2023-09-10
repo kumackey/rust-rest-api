@@ -1,5 +1,14 @@
 # rust-rest-api
 
+## APIの使い方
+
+TODO: いっぱい書いて❤️
+
+```bash
+# ユーザー一覧取得
+curl http://localhost:8080/users
+```
+
 ## データベース
 
 ### データベース接続
@@ -29,6 +38,18 @@ docker compose exec rust diesel migration run
 ```
 
 マイグレーションが成功したかは、上記のデータベース接続で select するなりで確認してください。
+
+## テスト
+
+```bash
+# この一行はアプリケーションコードを変更したときのみ。もしかしたらbind mountしてるから要らないかも？
+docker compose build
+
+docker compose up -d
+docker compose exec rust cargo test
+```
+
+ちなみにデータベースは分けてないので、テストのたびに色々データが作り直されます。
 
 ## web api サーバ立ち上げ
 

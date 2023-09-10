@@ -73,21 +73,30 @@ pub fn create_user(conn: &mut PgConnection, user: NewUser) -> Result<User, diese
 
 #[cfg(test)]
 mod tests {
+    use std::env;
+
     use super::*;
 
     #[tokio::test]
     async fn test_find_all_users() -> Result<(), Box<dyn std::error::Error>> {
-        let mut conn = PgConnection::establish(&"postgresql://postgres:mysecretpassword@localhost:15432/postgres")?;
+        let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+        let mut conn = PgConnection::establish(&database_url)?;
 
+        // TODO: bulk insert的なのあるはず？
         let _: User = diesel::insert_into(users)
             .values(&NewUser { name: "User1".to_string() })
+            .get_result(&mut conn)?;
+        let _: User = diesel::insert_into(users)
+            .values(&NewUser { name: "User2".to_string() })
             .get_result(&mut conn)?;
 
         let result = find_all_users(&mut conn);
 
         assert!(result.is_ok());
         let us = result.unwrap();
-        assert_eq!(us.len(), 1);
+
+        // TODO: 一度userレコードを消さないと数が一致しないので、なんとかしてください
+        assert_eq!(us.len(), 2);
         assert_eq!(us[0].id, 1);
         assert_eq!(us[0].name, "User1");
         assert_eq!(us[1].id, 2);

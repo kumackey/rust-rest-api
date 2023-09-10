@@ -1,7 +1,6 @@
 version: "3"
 services:
   rust:
-    container_name: rust
     build:
       context: .
     env_file:
