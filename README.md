@@ -14,7 +14,8 @@ curl https://nuuuuuuuuuuu-8389623ca042.herokuapp.com/users
 
 ### kumackey
 
-
+- web APIのフレームワークとしてはactix-webが有名(本ハンズオンでも採用)
+- testはproduction codeに直接書ける
 
 ### kerochelo
 
