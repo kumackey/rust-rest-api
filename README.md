@@ -17,7 +17,7 @@ curl -X POST http://localhost:8080/qustions/1/answers -d '{"answer": "阿蘇山"
 ### 設計
 
 省エネでホワイトボードに書いて jpeg とかでもOK  
-![画像の説明](./er.png "ER図")
+![ER図](./er.png "ER図")
 
 ### データベース接続
 
