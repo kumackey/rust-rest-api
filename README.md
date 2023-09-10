@@ -1,13 +1,18 @@
 # rust-rest-api
 
-## 環境変数設定
+## APIの使い方
+
+TODO: いっぱい書いて❤️
+
 ```bash
-cp .env.default .env
+# ユーザー一覧取得
+curl http://localhost:8080/users
 ```
 
 ## データベース
 
 ### データベース接続
+
 ```bash
 docker compose up -d
 docker compose exec postgres bash
@@ -24,31 +29,54 @@ CREATE DATABASE rust_rest_api;
 ```
 docker compose down -v
 docker compose up -d
-# この場合、上記のCREATE DATABASE rust_rest_api;をやり直して下さい。
 ```
-
-### diesel_cliの導入
-```bash
-cargo install diesel_cli --no-default-features --features postgres
-diesel setup
-```
-
-参考: https://zenn.dev/helloyuki/scraps/a242bfc79576c3
 
 ### マイグレーション
+
 ```bash
-diesel migration run
+docker compose exec rust diesel migration run
 ```
 
-マイグレーションが成功したかは、上記のデータベース接続でselectするなりで確認してください。
+マイグレーションが成功したかは、上記のデータベース接続で select するなりで確認してください。
 
-## web apiサーバ立ち上げ
+## テスト
+
 ```bash
-cargo run
+# この一行はアプリケーションコードを変更したときのみ。もしかしたらbind mountしてるから要らないかも？
+docker compose build
+
+docker compose up -d
+docker compose exec rust cargo test
+```
+
+ちなみにデータベースは分けてないので、テストのたびに色々データが作り直されます。
+
+## web api サーバ立ち上げ
+
+### docker で起動する場合(推奨)
+
+```
+docker compose up -d
 ```
 
 http://localhost:8080/
 
-上記通りやれば
-found person: 1 John
-って返ってくる(はず)
+アプリケーションコードをいじった場合はdocker compose up -d --buildで再起動します
+
+### localのhost machineで起動(非推奨)
+
+```bash
+cargo run
+```
+
+## デプロイ方法
+
+## 環境変数設定
+
+```bash
+cp .env.default .env
+```
+
+TODO: 書いておくと楽
+
+
