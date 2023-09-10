@@ -1,6 +1,3 @@
-use std::sync::Mutex;
-
-use actix_web::web;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::Queryable;
@@ -21,19 +18,15 @@ pub struct NewUser {
     pub name: String,
 }
 
-pub async fn find_all_users(db: web::Data<Mutex<PgConnection>>) -> Result<Vec<User>, diesel::result::Error> {
-    let mut conn = db.lock().unwrap();
-
+pub fn find_all_users(conn: &mut PgConnection) -> Result<Vec<User>, diesel::result::Error> {
     let results = users
         .limit(100)
-        .load::<User>(&mut *conn)?;
+        .load::<User>(conn)?;
 
     Ok(results)
 }
 
-pub async fn create_user(db: web::Data<Mutex<PgConnection>>, user: NewUser) -> Result<User, diesel::result::Error> {
-    let mut conn = db.lock().unwrap();
-
+pub fn create_user(conn: &mut PgConnection, user: NewUser) -> Result<User, diesel::result::Error> {
     let result = diesel::insert_into(users)
         .values(&user)
         .get_result(&mut *conn)?;
@@ -80,7 +73,26 @@ pub async fn create_user(db: web::Data<Mutex<PgConnection>>, user: NewUser) -> R
 
 #[cfg(test)]
 mod tests {
-    async fn test_find_all_users() {
+    use super::*;
 
+    #[tokio::test]
+    async fn test_find_all_users() -> Result<(), Box<dyn std::error::Error>> {
+        let mut conn = PgConnection::establish(&"postgresql://postgres:mysecretpassword@localhost:15432/postgres")?;
+
+        let _: User = diesel::insert_into(users)
+            .values(&NewUser { name: "User1".to_string() })
+            .get_result(&mut conn)?;
+
+        let result = find_all_users(&mut conn);
+
+        assert!(result.is_ok());
+        let us = result.unwrap();
+        assert_eq!(us.len(), 1);
+        assert_eq!(us[0].id, 1);
+        assert_eq!(us[0].name, "User1");
+        assert_eq!(us[1].id, 2);
+        assert_eq!(us[1].name, "User2");
+
+        Ok(())
     }
 }

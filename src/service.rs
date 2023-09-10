@@ -3,29 +3,30 @@ use std::sync::Mutex;
 use actix_web::{get, HttpResponse, post, Responder, web};
 use diesel::pg::PgConnection;
 
+use crate::model;
+
 #[get("/")]
 pub async fn get_root(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
     // TODO /get_usersと同じことをしたいので、共通化してください
-    // TODO crate::model::って書き方が何か違う気がする
-    match crate::model::find_all_users(db).await {
+    let mut conn = db.lock().unwrap();
+
+    match model::find_all_users(&mut conn) {
         Ok(user_list) => HttpResponse::Ok().body(
             serde_json::to_string(&user_list).unwrap()
         ),
-
-        // TODO: HttpResponse::Errorを返せるようにしてください
-        Err(_e) => HttpResponse::Ok().body("get users failed"),
+        Err(_e) => HttpResponse::InternalServerError().body("get users failed"),
     }
 }
 
 #[get("/users")]
 pub async fn get_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
-    match crate::model::find_all_users(db).await {
+    let mut conn = db.lock().unwrap();
+
+    match model::find_all_users(&mut conn) {
         Ok(user_list) => HttpResponse::Ok().body(
             serde_json::to_string(&user_list).unwrap()
         ),
-
-        // TODO: HttpResponse::Errorを返せるようにしてください
-        Err(_e) => HttpResponse::Ok().body("get users failed"),
+        Err(_e) => HttpResponse::InternalServerError().body("get users failed"),
     }
 }
 
@@ -33,31 +34,31 @@ pub async fn get_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
 #[post("/users")]
 pub async fn post_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
     // TODO: request bodyからnameを取得できるようにしてください
-    let nuser = crate::model::NewUser {
+    let nuser = model::NewUser {
         name: "test".to_string(),
     };
 
-    let user = crate::model::create_user(db, nuser).await;
+    let mut conn = db.lock().unwrap();
+
+    let user = model::create_user(&mut conn, nuser);
     match user {
         Ok(user) => HttpResponse::Ok().body(
             serde_json::to_string(&user).unwrap()
         ),
-
-        // TODO: HttpResponse::Errorを返せるようにしてください
-        Err(_e) => HttpResponse::Ok().body("post user failed"),
+        Err(_e) => HttpResponse::InternalServerError().body("post user failed"),
     }
 }
 
 #[get("/questions")]
 pub async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
-    match crate::model::find_all_users(db).await {
+    let mut conn = db.lock().unwrap();
+
+    match model::find_all_users(&mut conn) {
         // TODO: ここでuser_listを返してるけどquestionsを返すようにしたい
         Ok(user_list) => HttpResponse::Ok().body(
             serde_json::to_string(&user_list).unwrap()
         ),
-
-        // TODO: HttpResponse::Errorを返せるようにしてください
-        Err(_e) => HttpResponse::Ok().body("get questions failed"),
+        Err(_e) => HttpResponse::InternalServerError().body("get questions failed"),
     }
 }
 
@@ -67,8 +68,9 @@ pub async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder
 #[post("/answers")]
 pub async fn post_answers(_: String) -> impl Responder {
     // TODO: questionを登録する
-    // user_name, question_id, answerを受け取る
-    // user_nameからusersテーブルをfindして、なかったら作る
+    // user name, question_id, answerを受け取る
+    // user nameからusersテーブルをfindして、なかったら作る
+    // 同じuser nameでは登録できないようにしたいので、migrationでunique制約をつける
     // user_idを取得する
     // answersテーブルはuser_id, question_id, answer
 
