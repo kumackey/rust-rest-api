@@ -14,15 +14,17 @@ curl https://nuuuuuuuuuuu-8389623ca042.herokuapp.com/users
 
 ### kumackey
 
-- web APIのフレームワークとしてはactix-webが有名(本ハンズオンでも採用)
-- testはproduction codeに直接書ける
+- web API のフレームワークとしては actix-web が有名(本ハンズオンでも採用)
+- test は production code に直接書ける
 
 ### kerochelo
 
 ### kenchasonakai
 
 ### miloneko
+
 値は常に所有者を持つ
+
 ```
 fn main() {
     let s = String::from("hello");  // sがスコープに入る
@@ -38,23 +40,24 @@ fn main() {
 
 } // ここでxがスコープを抜け、sもスコープを抜ける。だが、sの値はムーブされているので、何も特別なことはない。
   //
-  ```
+```
 
- 所有権は一意で移動可能
- ```
- fn main() {
-    let s1 = String::from("hello"); // s1がスコープに入る
+所有権は一意で移動可能
 
-    let s2 = s1;                    // s1の値がs2にムーブする
-                                    // これ以降、s1は無効になる
+```
+fn main() {
+   let s1 = String::from("hello"); // s1がスコープに入る
 
-    println!("{}, world!", s1);     // エラーになる
+   let s2 = s1;                    // s1の値がs2にムーブする
+                                   // これ以降、s1は無効になる
+
+   println!("{}, world!", s1);     // エラーになる
 }
 ```
 
 所有権がスコープを抜けると、自動的に解放
 fn main() {
-    let s = String::from("hello");  // sがスコープに入る
+let s = String::from("hello"); // s がスコープに入る
 
     takes_ownership(s);             // sの値が関数にムーブされ...
                                     // ... ここではもう有効ではない
@@ -65,11 +68,13 @@ fn main() {
                                     // i32はCopyなので、この後にxを使っても
                                     // 大丈夫
 
-} // ここでxがスコープを抜け、sもスコープを抜ける。だが、sの値はムーブされているので、何も特別なことは起きない。
+} // ここで x がスコープを抜け、s もスコープを抜ける。だが、s の値はムーブされているので、何も特別なことは起きない。
 
 所有権によるメモリ管理のメリット
+
 - プログラムにより明示的にメモリ領域の確保と解放を行う
 - ガベージコレクションにより不要なメモリ領域を自動的に解放する
+
 ```
 fn main() {
     let s1 = String::from("hello"); // s1がスコープに入る
@@ -86,7 +91,8 @@ fn calculate_length(s: String) -> (String, usize) { // sがスコープに入る
 } // ここでlengthがスコープを抜ける。sもスコープを抜けるが、所有権がムーブされているので何も起きない
 ```
 
-所有権は複数の参照を持つことができないが、GCは複数の参照を持つことができる
+所有権は複数の参照を持つことができないが、GC は複数の参照を持つことができる
+
 ```
 rustのコード
 fn main() {
@@ -103,8 +109,10 @@ console.log(x);
 // 5
 ```
 
-
 ### watsumi
+
+- actix-web
+- deisel
 
 # 開発
 
@@ -172,12 +180,10 @@ docker compose up -d
 
 http://localhost:8080/
 
-アプリケーションコードをいじった場合はdocker compose up -d --buildで再起動します
+アプリケーションコードをいじった場合は docker compose up -d --build で再起動します
 
-### localのhost machineで起動(非推奨)
+### local の host machine で起動(非推奨)
 
 ```bash
 cargo run
 ```
-
-
