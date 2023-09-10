@@ -7,9 +7,17 @@ TODO: いっぱい書いて❤️
 ```bash
 # ユーザー一覧取得
 curl http://localhost:8080/users
+
+# ユーザからの回答提出
+curl -X POST http://localhost:8080/qustions/1/answers -d '{"answer": "阿蘇山", "user_name":"kumackey"}' -H 'Content-Type: application/json'
 ```
 
 ## データベース
+
+### 設計
+
+TODO: 誰かER図かなんか書いて❤️
+省エネでホワイトボードに書いて jpeg とかでもOK
 
 ### データベース接続
 
