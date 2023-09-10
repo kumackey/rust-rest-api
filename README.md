@@ -1,11 +1,10 @@
 # rust-rest-api
 
-
 ## 発表アジェンダ
 
 ## デモ
 
-みんなも
+みんなも触ってみよう！
 
 ```
 curl https://nuuuuuuuuuuu-8389623ca042.herokuapp.com/users
@@ -38,7 +37,7 @@ curl -X POST http://localhost:8080/qustions/1/answers -d '{"answer": "阿蘇山"
 ### データベース
 
 #### 設計
- 
+
 ![ER図](./er.png "ER図")
 
 #### データベース接続
