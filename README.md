@@ -1,6 +1,27 @@
 # rust-rest-api
 
-## APIの使い方
+
+## 発表アジェンダ
+
+## デモ
+
+```
+TODO:
+```
+
+## 学んだこと・取り組んだこと
+
+### kumackey
+
+### kerochelo 
+
+### kenchasonakai
+
+### miloneko
+
+### watsumi
+
+## APIの使い
 
 TODO: いっぱい書いて❤️
 
