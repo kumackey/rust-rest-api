@@ -68,18 +68,33 @@ pub async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder
 // 用途は、この質問に対する回答一覧を取得します
 
 
-// TODO: questions/:id/answersというルーティングにする
-// db: web::Data<Mutex<PgConnection>>も引数にする必要がありそう・・・？
-#[post("/answers")]
-pub async fn post_answers(_: String) -> impl Responder {
-    // TODO: questionを登録する
-    // user name, question_id, answerを受け取る
-    // user nameからusersテーブルをfindして、なかったら作る
-    // 同じuser nameでは登録できないようにしたいので、migrationでunique制約をつける
-    // user_idを取得する
-    // answersテーブルはuser_id, question_id, answer
+#[post("/questions/{questions_id}/answers")]
+pub async fn post_answers(db: web::Data<Mutex<PgConnection>>, web::Path(questions_id): web::Path<i32>, web::Json(answer): web::Json<model::NewAnswer>) -> impl Responder {
+    let mut conn = db.lock().unwrap();
 
-    HttpResponse::Ok().body("post answers")
+    let question = model::find_question(&mut conn, question_id);
+    match question {
+        Ok(question) => {
+            let user = model::find_or_create_user(&mut conn, answer.user_name.clone());
+            match user {
+                Ok(user) => {
+                    let nanswer = model::NewAnswer {
+                        users_id: user.id,
+                        questions_id: question.id,
+                        answer: answer.answer,
+                    };
+                    let answer = model::answer_question(&mut conn, nanswer);
+                    match answer {
+                        Ok(answer) => HttpResponse::Ok().body(
+                            serde_json::to_string(&answer).unwrap()
+                        ),
+                        Err(_e) => HttpResponse::InternalServerError().body("post answer failed"),
+                    }
+                },
+            }
+        },
+        Err(_e) => HttpResponse::InternalServerError().body("post answer failed"),
+    }
 }
 
 // TODO: users/:id/answersのGETを追加する

@@ -1,10 +1,19 @@
+use diesel::Expression;
+use diesel::sql_types::Timestamp;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::Queryable;
 use serde::{Deserialize, Serialize};
+use chrono::{DateTime, Utc};
 
 use crate::schema::users;
 use crate::schema::users::dsl::*;
+
+use crate::schema::answers;
+use crate::schema::answers::dsl::*;
+
+use crate::schema::questions;
+use crate::schema::questions::dsl::*;
 
 #[derive(Queryable, Serialize, Deserialize)]
 pub struct User {
@@ -13,7 +22,7 @@ pub struct User {
 }
 
 #[derive(Insertable)]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 pub struct NewUser {
     pub name: String,
 }
@@ -32,6 +41,22 @@ pub fn create_user(conn: &mut PgConnection, user: NewUser) -> Result<User, diese
         .get_result(&mut *conn)?;
 
     Ok(result)
+}
+
+pub fn find_or_create_user(conn: &mut PgConnection, user_name: String) -> Result<User, diesel::result::Error> {
+    let result = users
+        .filter(name.eq(user_name))
+        .first::<User>(conn);
+
+    match result {
+        Ok(user) => Ok(user),
+        Err(_) => {
+            let new_user = NewUser {
+                name: user_name,
+            };
+            create_user(conn, new_user)
+        }
+    }
 }
 
 // TODO: 上に似たような感じで、以下の関数やモデルを作ってみて下さい。
@@ -55,21 +80,47 @@ pub fn create_user(conn: &mut PgConnection, user: NewUser) -> Result<User, diese
 //     Ok(result)
 // }
 
-// #[derive(Queryable, Serialize, Deserialize, Insertable)]
-// struct Question {
-//     id: i32,
-//     questioner_id: i32,
-//     question: String,
-//     answer: String,
-// }
-//
-// #[derive(Queryable, Serialize, Deserialize, Insertable)]
-// struct Answer {
-//     id: i32,
-//     question_id: i32,
-//     answer: String,
-//     answered_at: String,
-// }
+#[derive(Queryable, Serialize, Deserialize)]
+pub struct Question {
+    pub id: i32,
+    pub question: String,
+    pub answer: String,
+    pub questioner_id: i32,
+}
+#[derive(Insertable)]
+#[diesel(table_name = questions)]
+pub struct NewQuestion {
+    pub question: String,
+}
+
+pub fn find_question(conn: &mut PgConnection, question_id: i32) -> Result<Question, diesel::result::Error> {
+    questions.find(question_id).first::<Question>(conn)
+}
+
+#[derive(Queryable, Serialize, Deserialize)]
+struct Answer {
+    id: i32,
+    users_id: i32,
+    questions_id: i32,
+    answer: String,
+    answered_at: DateTime<Utc>,
+}
+#[derive(Insertable)]
+#[diesel(table_name = answers)]
+pub struct NewAnswer {
+    pub users_id: i32,
+    pub questions_id: i32,
+    pub answer: String,
+    pub answered_at: DateTime<Utc>
+}
+
+pub fn answer_question(conn: &mut PgConnection, new_answer: NewAnswer) -> Result<Answer, diesel::result::Error> {
+    let result = diesel::insert_into(answers)
+        .values(&new_answer)
+        .get_result(&mut *conn)?;
+
+    Ok(result)
+}
 
 #[cfg(test)]
 mod tests {
