@@ -22,6 +22,87 @@ curl https://nuuuuuuuuuuu-8389623ca042.herokuapp.com/users
 ### kenchasonakai
 
 ### miloneko
+値は常に所有者を持つ
+```
+fn main() {
+    let s = String::from("hello");  // sがスコープに入る
+
+    takes_ownership(s);             // sの値が関数にムーブされ...
+                                    // ... ここではもう有効ではない
+
+    let x = 5;                      // xがスコープに入る
+
+    makes_copy(x);                  // xも関数にムーブされるが、
+                                    // i32はCopyなので、この後にxを使っても
+                                    // 大丈夫
+
+} // ここでxがスコープを抜け、sもスコープを抜ける。だが、sの値はムーブされているので、何も特別なことはない。
+  //
+  ```
+
+ 所有権は一意で移動可能
+ ```
+ fn main() {
+    let s1 = String::from("hello"); // s1がスコープに入る
+
+    let s2 = s1;                    // s1の値がs2にムーブする
+                                    // これ以降、s1は無効になる
+
+    println!("{}, world!", s1);     // エラーになる
+}
+```
+
+所有権がスコープを抜けると、自動的に解放
+fn main() {
+    let s = String::from("hello");  // sがスコープに入る
+
+    takes_ownership(s);             // sの値が関数にムーブされ...
+                                    // ... ここではもう有効ではない
+
+    let x = 5;                      // xがスコープに入る
+
+    makes_copy(x);                  // xも関数にムーブされるが、
+                                    // i32はCopyなので、この後にxを使っても
+                                    // 大丈夫
+
+} // ここでxがスコープを抜け、sもスコープを抜ける。だが、sの値はムーブされているので、何も特別なことは起きない。
+
+所有権によるメモリ管理のメリット
+- プログラムにより明示的にメモリ領域の確保と解放を行う
+- ガベージコレクションにより不要なメモリ領域を自動的に解放する
+```
+fn main() {
+    let s1 = String::from("hello"); // s1がスコープに入る
+
+    let (s2, len) = calculate_length(s1); // s1の所有権がmoveされ、s2にmoveされる
+
+    println!("The length of '{}' is {}.", s2, len); // s2がスコープに入る
+} // ここでs2はスコープを抜け、dropされる。s1もスコープを抜けるが、所有権がムーブされているので何も起きない
+
+fn calculate_length(s: String) -> (String, usize) { // sがスコープに入る
+    let length = s.len(); // lengthがスコープに入る
+
+    (s, length) // sとlengthを返す
+} // ここでlengthがスコープを抜ける。sもスコープを抜けるが、所有権がムーブされているので何も起きない
+```
+
+所有権は複数の参照を持つことができないが、GCは複数の参照を持つことができる
+```
+rustのコード
+fn main() {
+    let mut x = 5;
+    let y = &mut x;
+    *y = 6;
+    println!("{}", x);
+}
+
+JavaScriptのコード
+var x = 5;
+var y = x; y = 6;
+console.log(x);
+// 5
+```
+
 
 ### watsumi
 
