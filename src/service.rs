@@ -34,6 +34,7 @@ pub async fn get_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
 #[post("/users")]
 pub async fn post_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
     // TODO: request bodyからnameを取得できるようにしてください
+    // でもどっからrequest bodyが取り出せるんだ・・・？
     let nuser = model::NewUser {
         name: "test".to_string(),
     };
@@ -49,6 +50,7 @@ pub async fn post_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
     }
 }
 
+
 #[get("/questions")]
 pub async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
     let mut conn = db.lock().unwrap();
@@ -62,9 +64,12 @@ pub async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder
     }
 }
 
-// TODO questions/:id/answersのGETを追加する
+// TODO: questions/:id/answersのGETを追加する
 // 用途は、この質問に対する回答一覧を取得します
 
+
+// TODO: questions/:id/answersというルーティングにする
+// db: web::Data<Mutex<PgConnection>>も引数にする必要がありそう・・・？
 #[post("/answers")]
 pub async fn post_answers(_: String) -> impl Responder {
     // TODO: questionを登録する
