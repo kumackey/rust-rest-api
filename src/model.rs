@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::schema::users;
 use crate::schema::users::dsl::*;
+use crate::schema::questions;
+use crate::schema::questions::dsl::*;
 
 #[derive(Queryable, Serialize, Deserialize)]
 pub struct User {
@@ -33,6 +35,34 @@ pub fn create_user(conn: &mut PgConnection, user: NewUser) -> Result<User, diese
 
     Ok(result)
 }
+
+#[derive(Queryable, Serialize, Deserialize, Insertable)]
+#[table_name = "questions"]
+// ;
+pub struct Question {
+    pub id: i32,
+    pub questioner_id: i32,
+    pub question: String,
+    pub answer: String,
+}
+
+pub fn find_all_questions(conn: &mut PgConnection) -> Result<Vec<Question>, diesel::result::Error> {
+    let results = questions
+        .limit(100)
+        .load::<Question>(conn)?;
+
+    Ok(results)
+}
+
+//pub fn create_question(conn: &mut PgConnection, question: NewQuestion) -> Result<Question, diesel::result::Error> {
+//    let result: Question = diesel::insert_into(questions)
+  //  .values(&question)
+   // .get_result(&mut *conn)?;
+
+  //  Ok(result)
+//}
+
+
 
 // TODO: 上に似たような感じで、以下の関数やモデルを作ってみて下さい。
 // async fn find_by_name(db: web::Data<Mutex<PgConnection>>,name: String) -> Result<User, diesel::result::Error> {
