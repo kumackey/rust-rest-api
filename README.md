@@ -1,6 +1,4 @@
-# rust-rest-api
-
-## 発表アジェンダ
+# 発表アジェンダ
 
 ## デモ
 
@@ -16,6 +14,8 @@ curl https://nuuuuuuuuuuu-8389623ca042.herokuapp.com/users
 
 ### kumackey
 
+
+
 ### kerochelo
 
 ### kenchasonakai
@@ -24,7 +24,7 @@ curl https://nuuuuuuuuuuu-8389623ca042.herokuapp.com/users
 
 ### watsumi
 
-## 開発
+# 開発
 
 ```bash
 # ユーザー一覧取得
@@ -34,13 +34,13 @@ curl http://localhost:8080/users
 curl -X POST http://localhost:8080/qustions/1/answers -d '{"answer": "阿蘇山", "user_name":"kumackey"}' -H 'Content-Type: application/json'
 ```
 
-### データベース
+## データベース
 
-#### 設計
+### 設計
 
 ![ER図](./er.png "ER図")
 
-#### データベース接続
+### データベース接続
 
 ```bash
 docker compose up -d
@@ -53,14 +53,14 @@ CREATE DATABASE rust_rest_api;
 \c rust_rest_api
 ```
 
-#### データベースリセット
+### データベースリセット
 
 ```
 docker compose down -v
 docker compose up -d
 ```
 
-#### マイグレーション
+### マイグレーション
 
 ```bash
 docker compose exec rust diesel migration run
@@ -68,7 +68,7 @@ docker compose exec rust diesel migration run
 
 マイグレーションが成功したかは、上記のデータベース接続で select するなりで確認してください。
 
-### テスト
+## テスト
 
 ```bash
 # この一行はアプリケーションコードを変更したときのみ。もしかしたらbind mountしてるから要らないかも？
@@ -80,9 +80,9 @@ docker compose exec rust cargo test
 
 ちなみにデータベースは分けてないので、テストのたびに色々データが作り直されます。
 
-### web api サーバ立ち上げ
+## web api サーバ立ち上げ
 
-#### docker で起動する場合(推奨)
+### docker で起動する場合(推奨)
 
 ```
 docker compose up -d
@@ -92,7 +92,7 @@ http://localhost:8080/
 
 アプリケーションコードをいじった場合はdocker compose up -d --buildで再起動します
 
-#### localのhost machineで起動(非推奨)
+### localのhost machineで起動(非推奨)
 
 ```bash
 cargo run
