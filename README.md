@@ -6,7 +6,7 @@
 
 ```
 curl https://nuuuuuuuuuuu-8389623ca042.herokuapp.com/users
-curl -X POST http://localhost:8080/users -d '{"name":"hoge"}' -H 'Content-Type: application/json'
+curl -X POST https://nuuuuuuuuuuu-8389623ca042.herokuapp.com/users -d '{"name":"hoge"}' -H 'Content-Type: application/json'
 curl https://nuuuuuuuuuuu-8389623ca042.herokuapp.com/users
 ```
 
