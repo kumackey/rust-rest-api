@@ -14,6 +14,11 @@ curl -X POST http://localhost:8080/qustions/1/answers -d '{"answer": "阿蘇山"
 
 ## データベース
 
+### 設計
+
+TODO: 誰かER図かなんか書いて❤️
+省エネでホワイトボードに書いて jpeg とかでもOK
+
 ### データベース接続
 
 ```bash
