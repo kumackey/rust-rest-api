@@ -2,6 +2,7 @@ use std::sync::Mutex;
 
 use actix_web::{get, HttpResponse, post, Responder, web};
 use diesel::pg::PgConnection;
+use serde::Deserialize;
 
 use crate::model;
 
@@ -30,17 +31,18 @@ pub async fn get_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
     }
 }
 
-// 別にいらなかったけど、デバッグのために作った
+#[derive(Deserialize)]
+pub struct CreateUserRequest {
+    name: String,
+}
+
 #[post("/users")]
-pub async fn post_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
-    // TODO: request bodyからnameを取得できるようにしてください
-    // でもどっからrequest bodyが取り出せるんだ・・・？
+pub async fn post_users(db: web::Data<Mutex<PgConnection>>, req_body: web::Json<CreateUserRequest>) -> impl Responder {
     let nuser = model::NewUser {
-        name: "test".to_string(),
+        name: req_body.name.clone(),
     };
 
     let mut conn = db.lock().unwrap();
-
     let user = model::create_user(&mut conn, nuser);
     match user {
         Ok(user) => HttpResponse::Ok().body(
@@ -49,7 +51,6 @@ pub async fn post_users(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
         Err(_e) => HttpResponse::InternalServerError().body("post user failed"),
     }
 }
-
 
 #[get("/questions")]
 pub async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder {
@@ -66,7 +67,6 @@ pub async fn get_questions(db: web::Data<Mutex<PgConnection>>) -> impl Responder
 
 // TODO: questions/:id/answersのGETを追加する
 // 用途は、この質問に対する回答一覧を取得します
-
 
 // TODO: questions/:id/answersというルーティングにする
 // db: web::Data<Mutex<PgConnection>>も引数にする必要がありそう・・・？
