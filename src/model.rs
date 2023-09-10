@@ -1,10 +1,8 @@
-use diesel::Expression;
-use diesel::sql_types::Timestamp;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::Queryable;
 use serde::{Deserialize, Serialize};
-use chrono::{DateTime, Utc};
+use chrono;
 
 use crate::schema::users;
 use crate::schema::users::dsl::*;
@@ -103,7 +101,7 @@ struct Answer {
     users_id: i32,
     questions_id: i32,
     answer: String,
-    answered_at: DateTime<Utc>,
+    answered_at: chrono::NaiveDateTime,
 }
 #[derive(Insertable)]
 #[diesel(table_name = answers)]
@@ -111,7 +109,7 @@ pub struct NewAnswer {
     pub users_id: i32,
     pub questions_id: i32,
     pub answer: String,
-    pub answered_at: DateTime<Utc>
+    pub answered_at: chrono::NaiveDateTime
 }
 
 pub fn answer_question(conn: &mut PgConnection, new_answer: NewAnswer) -> Result<Answer, diesel::result::Error> {
