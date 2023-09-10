@@ -14,8 +14,17 @@ curl https://nuuuuuuuuuuu-8389623ca042.herokuapp.com/users
 
 ### kumackey
 
-- web API のフレームワークとしては actix-web が有名(本ハンズオンでも採用)
-- test は production code に直接書ける
+- Web API
+  - actix-webが有名
+  - https://actix.rs/
+- test
+  - production codeに直接書ける
+- migrationとORM導入
+  - deaselが有名？watsumiさん発見
+  - https://diesel.rs/
+- ファイル分け
+  - 同じディレクトリでもimportっぽいものが必要
+- Go言語のレビュー
 
 ### kerochelo
 
@@ -180,9 +189,9 @@ docker compose up -d
 
 http://localhost:8080/
 
-アプリケーションコードをいじった場合は docker compose up -d --build で再起動します
+アプリケーションコードをいじった場合はdocker compose up -d --buildで再起動します
 
-### local の host machine で起動(非推奨)
+### localのhost machineで起動(非推奨)
 
 ```bash
 cargo run
