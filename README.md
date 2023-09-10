@@ -9,7 +9,7 @@ TODO: いっぱい書いて❤️
 curl http://localhost:8080/users
 
 # ユーザからの回答提出
-curl -X POST http://localhost:8080/qustion/1/answer -d '{"answer": "阿蘇山", "user_name":"kumackey"}' -H 'Content-Type: application/json'
+curl -X POST http://localhost:8080/qustions/1/answers -d '{"answer": "阿蘇山", "user_name":"kumackey"}' -H 'Content-Type: application/json'
 ```
 
 ## データベース
